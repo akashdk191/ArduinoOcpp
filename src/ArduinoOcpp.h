@@ -259,6 +259,8 @@ bool isOperative(unsigned int connectorId = 1); //if the charge point is operati
 
 int getTransactionId(unsigned int connectorId = 1); //returns the txId if known, -1 if no transaction is running and 0 if txId not assigned yet
 
+void setTransactionId(unsigned int transactionId=-1,unsigned int connectorId= 1);
+
 const char *getTransactionIdTag(unsigned int connectorId = 1); //returns the authorization token if applicable, or nullptr otherwise
 
 void setOnResetRequest(OnReceiveReqListener onReceiveReq);

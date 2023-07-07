@@ -547,6 +547,26 @@ int ConnectorStatus::getTransactionId() {
     }
 }
 
+//Added by Akash Doijode
+int ConnectorStatus::setTransactionId(unsigned int transactionId) {
+    
+    if (!transaction) {
+        return -1;
+    }
+
+    if (transaction->isRunning()) {
+        if (transaction->getStartRpcSync().isConfirmed()) {
+            transaction->setTransactionId(transactionId);
+            return transactionId;
+        } else {
+            return 0;
+        } 
+    } else {
+        return -1;
+    }
+    return -1;
+}
+
 std::shared_ptr<Transaction>& ConnectorStatus::getTransaction() {
     return transaction;
 }

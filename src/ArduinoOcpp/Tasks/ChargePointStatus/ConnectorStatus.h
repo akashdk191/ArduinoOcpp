@@ -85,6 +85,7 @@ public:
     uint16_t getSessionWriteCount();
     bool isTransactionRunning();
     int getTransactionId();
+    int setTransactionId(unsigned int transactionId);
     int getTransactionIdSync();
     std::shared_ptr<Transaction>& getTransaction();
 

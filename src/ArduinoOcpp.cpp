@@ -549,6 +549,12 @@ int getTransactionId(unsigned int connectorId) {
     return connector->getTransactionId();
 }
 
+//Added by Akash Doijode
+void setTransactionId(unsigned int transactionId,unsigned int connectorId) {
+    auto &model = ocppEngine->getOcppModel();
+    model.getChargePointStatusService()->getConnector(connectorId)->setTransactionId(transactionId);
+}
+
 const char *getTransactionIdTag(unsigned int connectorId) {
     if (!ocppEngine) {
         AO_DBG_WARN("Please call OCPP_initialize before");
