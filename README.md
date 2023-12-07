@@ -1,75 +1,94 @@
-# <img src="https://user-images.githubusercontent.com/63792403/133922028-fefc8abb-fde9-460b-826f-09a458502d17.png" alt="Icon" height="24"> &nbsp; ArduinoOcpp
+# <img src="https://github.com/matth-x/MicroOcpp/assets/63792403/1c49d1ad-7afc-48d3-a54e-9aef2d4886db" alt="Icon" height="24"> &nbsp; MicroOcpp
 
-[![Build Status]( https://github.com/matth-x/ArduinoOcpp/workflows/PlatformIO%20CI/badge.svg)](https://github.com/matth-x/ArduinoOcpp/actions)
+[![Build Status]( https://github.com/matth-x/MicroOcpp/workflows/PlatformIO%20CI/badge.svg)](https://github.com/matth-x/MicroOcpp/actions)
+[![Unit tests]( https://github.com/matth-x/MicroOcpp/workflows/Unit%20tests/badge.svg)](https://github.com/matth-x/MicroOcpp/actions)
+[![codecov](https://codecov.io/github/matth-x/ArduinoOcpp/branch/develop/graph/badge.svg?token=UN6LO96HM7)](https://codecov.io/github/matth-x/ArduinoOcpp)
 
-OCPP-J 1.6 client for embedded microcontrollers. Portable C/C++. Compatible with Espressif, NXP, Texas Instruments and STM.
+OCPP 1.6 client for microcontrollers. Portable C/C++. Compatible with Espressif, Arduino, NXP, STM, Linux and more.
 
-Reference usage: [OpenEVSE](https://github.com/OpenEVSE/ESP32_WiFi_V4.x/blob/master/src/ocpp.cpp)
+**Formerly ArduinoOcpp ([migration guide](https://matth-x.github.io/MicroOcpp/migration/))**: *the initial version of this library used the Arduino API but this dependency was dropped some time ago and the old name has become outdated. Despite the new name, nothing changes for existing users and the Arduino integration will continue to be fully functional.*
 
-PlatformIO package: [ArduinoOcpp](https://platformio.org/lib/show/11975/ArduinoOcpp)
+Reference usage: [OpenEVSE](https://github.com/OpenEVSE/ESP32_WiFi_V4.x/blob/master/src/ocpp.cpp) | Technical introduction: [Docs](https://matth-x.github.io/MicroOcpp/intro-tech) | Website: [www.micro-ocpp.com](https://www.micro-ocpp.com)
 
-Website: [www.arduino-ocpp.com](https://www.arduino-ocpp.com)
-
-Fully integrated into the Arduino platform and the ESP32 / ESP8266. Runs on ESP-IDF, FreeRTOS and generic embedded C/C++ platforms.
-
-## Make your EVSE ready for OCPP :car::electric_plug::battery:
-
-This library allows your EVSE to communicate with an OCPP Backend and to participate in commercial charging networks. You can integrate it into an existing firmware development, or start a new EVSE project from scratch with it.
-
-:heavy_check_mark: Works with [SteVe](https://github.com/RWTH-i5-IDSG/steve) and [15+ commercial Central Systems](https://www.arduino-ocpp.com/#h.314525e8447cc93c_81)
-
-:heavy_check_mark: Tested in many charging stations
+:heavy_check_mark: Works with [SteVe](https://github.com/RWTH-i5-IDSG/steve) and [15+ commercial Central Systems](https://www.micro-ocpp.com/#h.314525e8447cc93c_81)
 
 :heavy_check_mark: Eligible for public chargers (Eichrecht-compliant)
 
-Try it (no hardware required): [ArduinoOcppSimulator](https://github.com/matth-x/ArduinoOcppSimulator)
+:heavy_check_mark: Supports all OCPP 1.6 feature profiles
 
-### Features
+## Tester / Demo App
 
-- handles the OCPP communication with the charging network
-- implements the standard OCPP charging process
-- provides an API for the integration of the hardware modules of your EVSE
-- works with any TLS implementation and WebSocket library. E.g.
-   - Arduino networking stack: [Links2004/arduinoWebSockets](https://github.com/Links2004/arduinoWebSockets), or
-   - generic embedded systems: [Mongoose Networking Library](https://github.com/cesanta/mongoose)
+*Main repository: [MicroOcppSimulator](https://github.com/matth-x/MicroOcppSimulator)*
 
-For simple chargers, the necessary hardware and internet integration is usually far below 1000 LOCs.
+(Beta) The Simulator is a demo & development tool for MicroOcpp which allows to quickly assess the compatibility with different OCPP backends. It simulates a full charging station, adds a GUI and a mocked hardware binding to MicroOcpp and runs in the browser (using WebAssembly): [Try it](https://demo.micro-ocpp.com/)
+
+<div align="center"><img src="https://github.com/matth-x/MicroOcpp/assets/63792403/27f2819b-41fd-41a7-88a8-9e673b8a88b8" alt="Screenshot" width="800em" href="https://demo.micro-ocpp.com/"></div>
+
+#### Usage
+
+**OCPP server setup**: Navigate to "Control Center". In the WebSocket options, add the OCPP backend URL, charge box ID and authorization key if existent. Press "Update WebSocket" to save. The Simulator should connect to the OCPP server. To check the connection status, it could be helpful to open the developer tools of the browser.
+
+If you don't have an OCPP server at hand, leave the charge box ID blank and enter the following backend address: `wss://echo.websocket.events/` (this server is sponsored by Lob.com)
+
+**RFID authentication**: Go to "Control Center" > "Connectors" > "Transaction" and update the idTag with the desired value.
+
+## Benchmarks
+
+*Full report: [MicroOcpp benchmark (esp-idf)](https://github.com/matth-x/MicroOcpp-benchmark)*
+
+The following measurements were taken on the ESP32 @ 160MHz and represent the optimistic best case scenario for a charger with two physical connectors (i.e. compiled with `-Os`, disabled debug output and logs).
+
+| Description | Value |
+| :--- | ---: |
+| Flash size (minimal) | 121,170 B |
+| Heap occupation (idle) | 12,308 B |
+| Heap occupation (peak) | 21,916 B |
+| Initailization | 21 ms |
+| `loop()` call (idle) | 0.05 ms |
+| Large message sent | 5 ms |
+
+In practical setups, the execution time is largely determined by IO delays and the heap occupation is significantly influenced by the configuration with reservation, local authorization and charging profile lists.
 
 ## Developers guide
 
-Please take `examples/ESP/main.cpp` as the starting point for your first project. It is a minimal example which shows how to establish an OCPP connection and how to start and stop charging sessions. The API documentation can be found in [`ArduinoOcpp.h`](https://github.com/matth-x/ArduinoOcpp/blob/master/src/ArduinoOcpp.h).
+PlatformIO package: [MicroOcpp](https://registry.platformio.org/libraries/matth-x/MicroOcpp)
+
+MicroOcpp is an implementation of the OCPP communication behavior. It automatically initiates the corresponding OCPP operations once the hardware status changes or the RFID input is updated with a new value. Conversely it processes new data from the server, stores it locally and updates the hardware controls when applicable.
+
+Please take `examples/ESP/main.cpp` as the starting point for the first project. It is a minimal example which shows how to establish an OCPP connection and how to start and stop charging sessions. The API documentation can be found in [`MicroOcpp.h`](https://github.com/matth-x/MicroOcpp/blob/master/src/MicroOcpp.h). Also check out the [Docs](https://matth-x.github.io/MicroOcpp).
 
 ### Dependencies
 
 Mandatory:
 
-- [bblanchon/ArduinoJSON](https://github.com/bblanchon/ArduinoJson) (please upgrade to version `6.19.1`)
+- [bblanchon/ArduinoJSON](https://github.com/bblanchon/ArduinoJson)
 
 If compiled with the Arduino integration:
 
-- [Links2004/arduinoWebSockets](https://github.com/Links2004/arduinoWebSockets) (please upgrade to version `2.3.6`)
+- [Links2004/arduinoWebSockets](https://github.com/Links2004/arduinoWebSockets) (version `2.4.1`)
 
-In case you use PlatformIO, you can copy all dependencies from `platformio.ini` into your own configuration file. Alternatively, you can install the full library with dependencies by adding `matth-x/ArduinoOcpp` in the PIO library manager.
+In case you use PlatformIO, you can copy all dependencies from `platformio.ini` into your own configuration file. Alternatively, you can install the full library with dependencies by adding `matth-x/MicroOcpp@1.0.0` in the PIO library manager.
 
-### Next development steps
+## OCPP 2.0.1 and ISO 15118
 
-- [x] reach full compliance to OCPP 1.6 Smart Charging Profile
-- [ ] integrate Authorization Cache
-- [ ] **get ready for OCPP 2.0.1 and ISO 15118**
+**The call for funding for the OCPP 2.0.1 upgrade is open.** The version 1.6 support has successfully been funded by private companies who share an interest in using this technology. OCPP is most often seen as a non-differentiating feature of chargers and is therefore perfectly suited for Open Source collaboration. If your company needs OCPP 2.0.1, please use the contact details at the end of this page to receive the more details about the funding plan and why it is beneficial to engage in the upgrade (for hardware manufacturers and CPOs).
 
-## Supported Feature Profiles
+MicroOcpp is a good foundation for starting the OCPP 2.0.1 development:
 
-| Feature profile | supported | in progress |
-| -------------- | :---------: | :-----------: |
-| **Core** | :heavy_check_mark: |
-| **Smart charging** | :heavy_check_mark: |
-| **Remote trigger** | :heavy_check_mark: |
-| **Firmware management** | :heavy_check_mark: |
+:tada: Tested by hundreds, including backend operators. The [Simulator](https://github.com/matth-x/MicroOcppSimulator) encourages quick compatibility tests
 
-## Further help
+:hammer: Comes with development tools and a CI/CD specialized for OCPP
 
-I hope this guide can help you to successfully integrate an OCPP controller into your EVSE. If something needs clarification or if you have a question, please send me a message.
+:man_teacher: Academic background: roots in a research project
 
-:envelope: : matthias A⊤ arduino-ocpp DО⊤ com
+:closed_lock_with_key: Unit tests with valgrind, AddressSanitizer and UndefinedBehaviorSanitizer
 
-If you want professional assistance for your EVSE project, you can contact me as well. I'm looking forward to hearing about your ideas!
+:heart: Contributions are highly welcome. Open to building a team
+
+A note on ISO 15118: this library facilitates the integration of ISO 15118 by handling its OCPP-side communication. A public demonstration will follow with the first collaboration on an open OCPP 2.0.1 + ISO 15118 integration.
+
+## Contact details
+
+I hope the given documentation and guidance can help you to successfully integrate an OCPP controller into your EVSE. I will be happy if you reach out!
+
+:envelope: : matthias [A⊤] arduino-ocpp [DО⊤] com

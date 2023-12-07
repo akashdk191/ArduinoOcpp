@@ -1,7 +1,7 @@
 #include <iostream>
-#include <ArduinoOcpp.h>
+#include <MicroOcpp.h>
 
-using namespace ArduinoOcpp;
+using namespace MicroOcpp;
 
 void cpp_console_out(const char *msg) {
     std::cout << msg;
@@ -13,10 +13,8 @@ unsigned long custom_timer_cb() {
 }
 
 void loop() {
-    mtime += 1000;
-    OCPP_loop();
-    mtime += 1000;
-    OCPP_loop();
-    mtime += 1000;
-    OCPP_loop();
+    for (int i = 0; i < 30; i++) {
+        mtime += 100;
+        mocpp_loop();
+    }
 }

@@ -1,5 +1,5 @@
-// matth-x/ArduinoOcpp
-// Copyright Matthias Akstaller 2019 - 2022
+// matth-x/MicroOcpp
+// Copyright Matthias Akstaller 2019 - 2023
 // MIT License
 
 #include <Arduino.h>
@@ -13,8 +13,8 @@ ESP8266WiFiMulti WiFiMulti;
 #error only ESP32 or ESP8266 supported at the moment
 #endif
 
-#include <ArduinoOcpp.h>
-#include <ArduinoOcpp/Core/OcppSocket.h> //need for setting TLS credentials
+#include <MicroOcpp.h>
+#include <MicroOcpp/Core/Connection.h> //need for setting TLS credentials
 
 #define STASSID  "YOUR_WIFI_SSID"
 #define STAPSK   "YOUR_WIFI_PW"
@@ -66,7 +66,7 @@ emyPxgcYxn/eR44/KJ4EBs+lVDR3veyJm+kXQ99b21/+jh5Xos1AnX5iItreGCc=
 )EOF";
 
 WebSocketsClient wsockSecure {};
-ArduinoOcpp::EspWiFi::OcppClientSocket osockSecure {&wsockSecure};
+MicroOcpp::EspWiFi::WSClient osockSecure {&wsockSecure};
 
 void setup() {
 
@@ -117,19 +117,15 @@ void setup() {
     wsockSecure.setReconnectInterval(5000);
     wsockSecure.enableHeartbeat(15000, 3000, 2);
     wsockSecure.setAuthorization(OCPP_AUTH_ID, OCPP_AUTH_KEY); // => Authorization: Basic QUwxMDAwOgABAgMEBQYH////////////////
-    OCPP_initialize(osockSecure);
+    
+    mocpp_initialize(osockSecure, ChargerCredentials("My Charging Station", "My company name"));
 
     /*
-     * ... see ArduinoOcpp.h for how to integrate the EVSE hardware.
+     * ... see MicroOcpp.h for how to integrate the EVSE hardware.
      *
      * This example only showcases the TLS connection. For examples about the HW integration,
      * please see the other examples
      */
-
-    /*
-     * Notify the Central System that this station is ready
-     */
-    bootNotification("My Charging Station", "My company name");
 }
 
 void loop() {
@@ -137,7 +133,7 @@ void loop() {
     /*
      * Execute all charge point routines and handle WebSocket
      */
-    OCPP_loop();
+    mocpp_loop();
 
-    //... see ArduinoOcpp.h and the other examples for how to integrate the EVSE hardware.
+    //... see MicroOcpp.h and the other examples for how to integrate the EVSE hardware.
 }

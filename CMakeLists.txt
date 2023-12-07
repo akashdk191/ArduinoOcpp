@@ -1,101 +1,166 @@
-# matth-x/ArduinoOcpp
+# matth-x/MicroOcpp
 # Copyright Matthias Akstaller 2019 - 2023
 # MIT License
 
 cmake_minimum_required(VERSION 3.15)
 
-set(AO_SRC
-    src/ArduinoOcpp/Core/Configuration.cpp
-    src/ArduinoOcpp/Core/ConfigurationContainer.cpp
-    src/ArduinoOcpp/Core/ConfigurationContainerFlash.cpp
-    src/ArduinoOcpp/Core/ConfigurationKeyValue.cpp
-    src/ArduinoOcpp/Core/FilesystemAdapter.cpp
-    src/ArduinoOcpp/Core/FilesystemUtils.cpp
-    src/ArduinoOcpp/Core/OcppConnection.cpp
-    src/ArduinoOcpp/Core/OcppEngine.cpp
-    src/ArduinoOcpp/Core/OcppMessage.cpp
-    src/ArduinoOcpp/Core/OcppModel.cpp
-    src/ArduinoOcpp/Core/OcppOperation.cpp
-    src/ArduinoOcpp/Core/OcppOperationTimeout.cpp
-    src/ArduinoOcpp/Core/OcppServer.cpp
-    src/ArduinoOcpp/Core/OcppSocket.cpp
-    src/ArduinoOcpp/Core/OcppTime.cpp
-    src/ArduinoOcpp/Core/OperationsQueue.cpp
-    src/ArduinoOcpp/Core/OperationStore.cpp
-    src/ArduinoOcpp/MessagesV16/Authorize.cpp
-    src/ArduinoOcpp/MessagesV16/BootNotification.cpp
-    src/ArduinoOcpp/MessagesV16/ChangeAvailability.cpp
-    src/ArduinoOcpp/MessagesV16/ChangeConfiguration.cpp
-    src/ArduinoOcpp/MessagesV16/ClearCache.cpp
-    src/ArduinoOcpp/MessagesV16/ClearChargingProfile.cpp
-    src/ArduinoOcpp/MessagesV16/DataTransfer.cpp
-    src/ArduinoOcpp/MessagesV16/DiagnosticsStatusNotification.cpp
-    src/ArduinoOcpp/MessagesV16/FirmwareStatusNotification.cpp
-    src/ArduinoOcpp/MessagesV16/GetCompositeSchedule.cpp
-    src/ArduinoOcpp/MessagesV16/GetConfiguration.cpp
-    src/ArduinoOcpp/MessagesV16/GetDiagnostics.cpp
-    src/ArduinoOcpp/MessagesV16/Heartbeat.cpp
-    src/ArduinoOcpp/MessagesV16/MeterValues.cpp
-    src/ArduinoOcpp/MessagesV16/RemoteStartTransaction.cpp
-    src/ArduinoOcpp/MessagesV16/RemoteStopTransaction.cpp
-    src/ArduinoOcpp/MessagesV16/Reset.cpp
-    src/ArduinoOcpp/MessagesV16/SetChargingProfile.cpp
-    src/ArduinoOcpp/MessagesV16/StartTransaction.cpp
-    src/ArduinoOcpp/MessagesV16/StatusNotification.cpp
-    src/ArduinoOcpp/MessagesV16/StopTransaction.cpp
-    src/ArduinoOcpp/MessagesV16/TriggerMessage.cpp
-    src/ArduinoOcpp/MessagesV16/UnlockConnector.cpp
-    src/ArduinoOcpp/MessagesV16/UpdateFirmware.cpp
-    src/ArduinoOcpp/Platform.cpp
-    src/ArduinoOcpp/SimpleOcppOperationFactory.cpp
-    src/ArduinoOcpp/Tasks/ChargePointStatus/ChargePointStatusService.cpp
-    src/ArduinoOcpp/Tasks/ChargePointStatus/ConnectorStatus.cpp
-    src/ArduinoOcpp/Tasks/Diagnostics/DiagnosticsService.cpp
-    src/ArduinoOcpp/Tasks/FirmwareManagement/FirmwareService.cpp
-    src/ArduinoOcpp/Tasks/Heartbeat/HeartbeatService.cpp
-    src/ArduinoOcpp/Tasks/Metering/ConnectorMeterValuesRecorder.cpp
-    src/ArduinoOcpp/Tasks/Metering/MeteringService.cpp
-    src/ArduinoOcpp/Tasks/Metering/MeterStore.cpp
-    src/ArduinoOcpp/Tasks/Metering/MeterValue.cpp
-    src/ArduinoOcpp/Tasks/Metering/SampledValue.cpp
-    src/ArduinoOcpp/Tasks/SmartCharging/SmartChargingModel.cpp
-    src/ArduinoOcpp/Tasks/SmartCharging/SmartChargingService.cpp
-    src/ArduinoOcpp/Tasks/Transactions/Transaction.cpp
-    src/ArduinoOcpp/Tasks/Transactions/TransactionProcess.cpp
-    src/ArduinoOcpp/Tasks/Transactions/TransactionStore.cpp
-    src/ArduinoOcpp.cpp
-    src/ArduinoOcpp_c.cpp
+
+set(MO_SRC
+    src/MicroOcpp/Core/Configuration.cpp
+    src/MicroOcpp/Core/ConfigurationContainer.cpp
+    src/MicroOcpp/Core/ConfigurationContainerFlash.cpp
+    src/MicroOcpp/Core/ConfigurationKeyValue.cpp
+    src/MicroOcpp/Core/FilesystemAdapter.cpp
+    src/MicroOcpp/Core/FilesystemUtils.cpp
+    src/MicroOcpp/Core/RequestQueue.cpp
+    src/MicroOcpp/Core/Context.cpp
+    src/MicroOcpp/Core/Operation.cpp
+    src/MicroOcpp/Model/Model.cpp
+    src/MicroOcpp/Core/Request.cpp
+    src/MicroOcpp/Core/Connection.cpp
+    src/MicroOcpp/Core/Time.cpp
+    src/MicroOcpp/Core/RequestQueueStorageStrategy.cpp
+    src/MicroOcpp/Core/RequestStore.cpp
+    src/MicroOcpp/Operations/Authorize.cpp
+    src/MicroOcpp/Operations/BootNotification.cpp
+    src/MicroOcpp/Operations/CancelReservation.cpp
+    src/MicroOcpp/Operations/ChangeAvailability.cpp
+    src/MicroOcpp/Operations/ChangeConfiguration.cpp
+    src/MicroOcpp/Operations/ClearCache.cpp
+    src/MicroOcpp/Operations/ClearChargingProfile.cpp
+    src/MicroOcpp/Operations/CustomOperation.cpp
+    src/MicroOcpp/Operations/DataTransfer.cpp
+    src/MicroOcpp/Operations/DiagnosticsStatusNotification.cpp
+    src/MicroOcpp/Operations/FirmwareStatusNotification.cpp
+    src/MicroOcpp/Operations/GetCompositeSchedule.cpp
+    src/MicroOcpp/Operations/GetConfiguration.cpp
+    src/MicroOcpp/Operations/GetDiagnostics.cpp
+    src/MicroOcpp/Operations/GetLocalListVersion.cpp
+    src/MicroOcpp/Operations/Heartbeat.cpp
+    src/MicroOcpp/Operations/MeterValues.cpp
+    src/MicroOcpp/Operations/RemoteStartTransaction.cpp
+    src/MicroOcpp/Operations/RemoteStopTransaction.cpp
+    src/MicroOcpp/Operations/ReserveNow.cpp
+    src/MicroOcpp/Operations/Reset.cpp
+    src/MicroOcpp/Operations/SendLocalList.cpp
+    src/MicroOcpp/Operations/SetChargingProfile.cpp
+    src/MicroOcpp/Operations/StartTransaction.cpp
+    src/MicroOcpp/Operations/StatusNotification.cpp
+    src/MicroOcpp/Operations/StopTransaction.cpp
+    src/MicroOcpp/Operations/TriggerMessage.cpp
+    src/MicroOcpp/Operations/UnlockConnector.cpp
+    src/MicroOcpp/Operations/UpdateFirmware.cpp
+    src/MicroOcpp/Platform.cpp
+    src/MicroOcpp/Core/SimpleRequestFactory.cpp
+    src/MicroOcpp/Core/OperationRegistry.cpp
+    src/MicroOcpp/Model/Authorization/AuthorizationData.cpp
+    src/MicroOcpp/Model/Authorization/AuthorizationList.cpp
+    src/MicroOcpp/Model/Authorization/AuthorizationService.cpp
+    src/MicroOcpp/Model/Boot/BootService.cpp
+    src/MicroOcpp/Model/ConnectorBase/ConnectorsCommon.cpp
+    src/MicroOcpp/Model/ConnectorBase/Connector.cpp
+    src/MicroOcpp/Model/ConnectorBase/Notification.cpp
+    src/MicroOcpp/Model/Diagnostics/DiagnosticsService.cpp
+    src/MicroOcpp/Model/FirmwareManagement/FirmwareService.cpp
+    src/MicroOcpp/Model/Heartbeat/HeartbeatService.cpp
+    src/MicroOcpp/Model/Metering/MeteringConnector.cpp
+    src/MicroOcpp/Model/Metering/MeteringService.cpp
+    src/MicroOcpp/Model/Metering/MeterStore.cpp
+    src/MicroOcpp/Model/Metering/MeterValue.cpp
+    src/MicroOcpp/Model/Metering/SampledValue.cpp
+    src/MicroOcpp/Model/Reservation/Reservation.cpp
+    src/MicroOcpp/Model/Reservation/ReservationService.cpp
+    src/MicroOcpp/Model/Reset/ResetService.cpp
+    src/MicroOcpp/Model/SmartCharging/SmartChargingModel.cpp
+    src/MicroOcpp/Model/SmartCharging/SmartChargingService.cpp
+    src/MicroOcpp/Model/Transactions/Transaction.cpp
+    src/MicroOcpp/Model/Transactions/TransactionDeserialize.cpp
+    src/MicroOcpp/Model/Transactions/TransactionStore.cpp
+    src/MicroOcpp.cpp
+    src/MicroOcpp_c.cpp
 )
 
 if(ESP_PLATFORM)
 
-    idf_component_register(SRCS ${AO_SRC}
-                        INCLUDE_DIRS "./src" "${PROJECT_DIR}/include"
+    idf_component_register(SRCS ${MO_SRC}
+                        INCLUDE_DIRS "./src" "../ArduinoJson/src"
                         PRIV_REQUIRES spiffs)
 
     target_compile_options(${COMPONENT_TARGET} PUBLIC
-        -DAO_CUSTOM_WS
-        -DAO_CUSTOM_UPDATER
-        -DAO_CUSTOM_RESET
-        -DAO_PLATFORM=AO_PLATFORM_ESPIDF)
+        -DMO_PLATFORM=MO_PLATFORM_ESPIDF
+        -DMO_CUSTOM_WS
+        -DMO_CUSTOM_UPDATER
+        -DMO_CUSTOM_RESET
+        )
 
     return()
 endif()
 
-add_library(ArduinoOcpp ${AO_SRC})
+project(MicroOcpp
+        VERSION 0.2.0)
 
-target_include_directories(ArduinoOcpp PUBLIC
-                            "./src"
-                            "../ArduinoJson/src"
-                            )
+add_library(MicroOcpp ${MO_SRC})
 
-target_compile_definitions(ArduinoOcpp PUBLIC
-    AO_PLATFORM=AO_PLATFORM_UNIX
-    AO_CUSTOM_WS
-    AO_CUSTOM_UPDATER
-    AO_CUSTOM_RESET
-    AO_DBG_LEVEL=AO_DL_DEBUG
-    AO_TRAFFIC_OUT
-    AO_FILENAME_PREFIX="./ao_store"
-    AO_DEACTIVATE_FLASH_SMARTCHARGING
-    )
+target_include_directories(MicroOcpp PUBLIC
+    "./src"
+    "../ArduinoJson/src"
+)
+
+target_compile_definitions(MicroOcpp PUBLIC
+    MO_PLATFORM=MO_PLATFORM_UNIX
+    MO_CUSTOM_WS
+    MO_CUSTOM_UPDATER
+    MO_CUSTOM_RESET
+)
+
+# Unit tests
+
+set(MO_SRC_UNIT
+    tests/helpers/testHelper.cpp
+    tests/ocppEngineLifecycle.cpp
+    tests/TransactionSafety.cpp
+    tests/ChargingSessions.cpp
+    tests/ConfigurationBehavior.cpp
+    tests/SmartCharging.cpp
+    tests/Api.cpp
+    tests/Metering.cpp
+    tests/Configuration.cpp
+    tests/Reservation.cpp
+    tests/LocalAuthList.cpp
+)
+
+add_executable(mo_unit_tests
+    ${MO_SRC}
+    ${MO_SRC_UNIT}
+    ./tests/catch2/catchMain.cpp
+)
+
+target_include_directories(mo_unit_tests PUBLIC
+    "./tests/catch2"
+    "./tests/helpers"
+    "./src"
+)
+
+target_compile_definitions(mo_unit_tests PUBLIC
+    MO_PLATFORM=MO_PLATFORM_UNIX
+    MO_NUMCONNECTORS=3
+    MO_CUSTOM_TIMER
+    MO_CUSTOM_WS
+    MO_CUSTOM_UPDATER
+    MO_CUSTOM_RESET
+    MO_DBG_LEVEL=MO_DL_DEBUG
+    MO_TRAFFIC_OUT
+    MO_FILENAME_PREFIX="./mo_store/"
+    MO_LocalAuthListMaxLength=8
+    MO_SendLocalListMaxLength=4
+)
+
+target_compile_options(mo_unit_tests PUBLIC
+    -O0
+    -g
+    --coverage
+)
+
+target_link_options(mo_unit_tests PUBLIC
+    --coverage
+)

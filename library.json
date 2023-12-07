@@ -1,61 +1,52 @@
 {
-    "name": "ArduinoOcpp",
-    "version": "0.2.0",
-    "description": "OCPP 1.6 Client for the ESP8266 and ESP32",
-    "keywords": "OCPP, 1.6, OCPP 1.6, Smart Energy, Smart Charging, client, ESP8266, ESP32, Arduino, EVSE, Charge Point",
+    "name": "MicroOcpp",
+    "version": "1.0.0",
+    "description": "OCPP 1.6 Client for microcontrollers",
+    "keywords": "OCPP, 1.6, OCPP 1.6, Smart Energy, Smart Charging, client, ESP8266, ESP32, Arduino, esp-idf, EVSE, Charge Point",
     "repository":
     {
         "type": "git",
-        "url": "https://github.com/matth-x/ArduinoOcpp/"
+        "url": "https://github.com/matth-x/MicroOcpp/"
     },
     "authors":
     [
       {
         "name": "Matthias Akstaller",
-        "url": "https://www.arduino-ocpp.com",
+        "url": "https://www.micro-ocpp.com",
         "maintainer": true
       }
     ],
     "license": "MIT",
-    "homepage": "https://www.arduino-ocpp.com",
+    "homepage": "https://www.micro-ocpp.com",
     "dependencies": [
         {
             "owner": "bblanchon",
             "name": "ArduinoJson",
-            "version": "6.19.1"
+            "version": "6.20.1"
         },
         {
             "owner": "links2004",
             "name": "WebSockets",
-            "version": "2.3.6"
-        },
-        {
-            "owner": "lorol",
-            "name": "LittleFS_esp32",
-            "version": "1.0.5",
-            "platforms": ["espressif32"]
+            "version": "2.4.1"
         }
       ],
-    "frameworks": "arduino",
+    "frameworks": "arduino,espidf",
     "platforms": "espressif8266, espressif32",
 
     "export": {
         "include":
         [
             "src/*",
-            "examples/ESP/*",
-            "examples/ESP-TLS/*",
-            "examples/SECC/*",
+            "examples/*",
             "platformio.ini",
             "library.json",
+            "library.properties",
             "README.md",
-            "LICENSE"
-        ],
-        "exclude":
-        [
-            "src/sdkconfig*",
-            "examples/SECC/WiFiManager*",
-            "src/main*"
+            "CMakeLists.txt",
+            "docs/*",
+            "LICENSE",
+            "mkdocs.yml",
+            "CHANGELOG.md"
         ]
     },
 
@@ -75,13 +66,11 @@
           ]
       },
       {
-        "name": "EVSE Communications Controller",
-        "base": "examples/SECC",
+        "name": "ESP-IDF integration",
+        "base": "examples/ESP-IDF",
         "files": [
-            "main.cpp",
-            "platformio.ini",
-            "README.md"
+            "main/main.c"
         ]
-    }
-  ]
-  }
+      }
+    ]
+}

@@ -1,111 +1,96 @@
-#include <ArduinoOcpp.h>
-#include <ArduinoOcpp/Core/OcppSocket.h>
-#include <ArduinoOcpp/Core/OcppEngine.h>
-#include <ArduinoOcpp/Core/OcppModel.h>
-#include <ArduinoOcpp/Tasks/ChargePointStatus/ChargePointStatusService.h>
-#include <ArduinoOcpp/SimpleOcppOperationFactory.h>
-#include <ArduinoOcpp/MessagesV16/BootNotification.h>
-#include <ArduinoOcpp/MessagesV16/StatusNotification.h>
-#include <ArduinoOcpp/Debug.h>
+#include <MicroOcpp.h>
+#include <MicroOcpp/Core/Connection.h>
+#include <MicroOcpp/Core/Context.h>
+#include <MicroOcpp/Model/Model.h>
+#include <MicroOcpp/Core/Configuration.h>
+#include <MicroOcpp/Core/SimpleRequestFactory.h>
+#include <MicroOcpp/Operations/BootNotification.h>
+#include <MicroOcpp/Operations/StatusNotification.h>
+#include <MicroOcpp/Debug.h>
 #include "./catch2/catch.hpp"
 #include "./helpers/testHelper.h"
 
-using namespace ArduinoOcpp;
+using namespace MicroOcpp;
 
 
 TEST_CASE( "Transaction safety" ) {
+    printf("\nRun %s\n",  "Transaction safety");
 
-    //initialize OcppEngine with dummy socket
-    OcppEchoSocket echoSocket;
-    OCPP_initialize(echoSocket);
+    //initialize Context with dummy socket
+    LoopbackConnection loopback;
+    mocpp_initialize(loopback);
 
-    ao_set_timer(custom_timer_cb);
+    mocpp_set_timer(custom_timer_cb);
 
-    auto connectionTimeOut = declareConfiguration<int>("ConnectionTimeOut", 30, CONFIGURATION_FN);
-        *connectionTimeOut = 30;
-
-    bootNotification("dummy1234", "");
+    declareConfiguration<int>("ConnectionTimeOut", 30)->setInt(30);
 
     SECTION("Basic transaction") {
-        AO_DBG_DEBUG("Basic transaction");
-        OCPP_loop();
-        OCPP_loop();
-        OCPP_loop();
+        MO_DBG_DEBUG("Basic transaction");
+        loop();
         startTransaction("mIdTag");
-        OCPP_loop();
+        loop();
         REQUIRE(ocppPermitsCharge());
         stopTransaction();
-        OCPP_loop();
+        loop();
         REQUIRE(!ocppPermitsCharge());
 
-        OCPP_deinitialize();
+        mocpp_deinitialize();
     }
 
     SECTION("Managed transaction") {
-        AO_DBG_DEBUG("Managed transaction");
-        OCPP_loop();
-        OCPP_loop();
-        OCPP_loop();
+        MO_DBG_DEBUG("Managed transaction");
+        loop();
         setConnectorPluggedInput([] () {return true;});
         beginTransaction("mIdTag");
-        OCPP_loop();
+        loop();
         REQUIRE(ocppPermitsCharge());
         endTransaction();
-        OCPP_loop();
+        loop();
         REQUIRE(!ocppPermitsCharge());
         
-        OCPP_deinitialize();
+        mocpp_deinitialize();
     }
 
     SECTION("Reset during transaction 01 - interrupt initiation") {
-        AO_DBG_DEBUG("Reset during transaction 01 - interrupt initiation");
+        MO_DBG_DEBUG("Reset during transaction 01 - interrupt initiation");
         setConnectorPluggedInput([] () {return false;});
-        OCPP_loop();
-        OCPP_loop();
-        OCPP_loop();
+        loop();
         beginTransaction("mIdTag");
-        OCPP_deinitialize(); //reset and jump to next section
+        loop();
+        mocpp_deinitialize(); //reset and jump to next section
     }
 
     SECTION("Reset during transaction 02 - interrupt initiation second time") {
-        AO_DBG_DEBUG("Reset during transaction 02 - interrupt initiation second time");
+        MO_DBG_DEBUG("Reset during transaction 02 - interrupt initiation second time");
         setConnectorPluggedInput([] () {return false;});
-        OCPP_loop();
-        OCPP_loop();
-        OCPP_loop();
+        loop();
         REQUIRE(!ocppPermitsCharge());
-        OCPP_deinitialize();
+        mocpp_deinitialize();
     }
 
     SECTION("Reset during transaction 03 - interrupt running tx") {
-        AO_DBG_DEBUG("Reset during transaction 03 - interrupt running tx");
+        MO_DBG_DEBUG("Reset during transaction 03 - interrupt running tx");
         setConnectorPluggedInput([] () {return true;});
-        OCPP_loop();
-        OCPP_loop();
-        OCPP_loop();
+        loop();
         REQUIRE(ocppPermitsCharge());
-        OCPP_deinitialize();
+        mocpp_deinitialize();
     }
 
     SECTION("Reset during transaction 04 - interrupt stopping tx") {
-        AO_DBG_DEBUG("Reset during transaction 04 - interrupt stopping tx");
+        MO_DBG_DEBUG("Reset during transaction 04 - interrupt stopping tx");
         setConnectorPluggedInput([] () {return true;});
-        OCPP_loop();
-        OCPP_loop();
-        OCPP_loop();
+        loop();
         REQUIRE(ocppPermitsCharge());
         endTransaction();
-        OCPP_deinitialize();
+        mocpp_deinitialize();
     }
 
     SECTION("Reset during transaction 06 - check tx finished") {
-        AO_DBG_DEBUG("Reset during transaction 06 - check tx finished");
+        MO_DBG_DEBUG("Reset during transaction 06 - check tx finished");
         setConnectorPluggedInput([] () {return true;});
-        OCPP_loop();
-        OCPP_loop();
-        OCPP_loop();
+        loop();
         REQUIRE(!ocppPermitsCharge());
-        OCPP_deinitialize();
+        mocpp_deinitialize();
     }
 
 }
